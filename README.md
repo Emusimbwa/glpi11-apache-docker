@@ -34,16 +34,26 @@ https://hub.docker.com/r/abed4/glpi
 # Project structure
 
 ├── Dockerfile
+
 ├── downstream.php
+
 ├── local_define.php
+
 ├── README.md
+
 ├── .env.example
+
 │
+
 ├── scripts
+
 │ └── generate-secrets.sh
+
 │
+
 └── src
-  └── docker-compose.yam
+
+|     └── docker-compose.yam
 
 ---
 
