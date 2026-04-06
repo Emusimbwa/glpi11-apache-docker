@@ -34,33 +34,22 @@ https://hub.docker.com/r/abed4/glpi
 - Environment-based configuration
 - Compatible with cron container
 
----
-
 # Project structure
-
-├── Dockerfile
-
-├── downstream.php
-
-├── local_define.php
-
-├── README.md
-
-├── .env.example
-
+```
+glpi11-apache-docker/
+├── Dockerfile                 # Container image definition
+├── downstream.php             # GLPI configuration override
+├── local_define.php           # GLPI settings
+├── README.md                  # This file
+├── .env.example               # Environment template
+├── .gitignore                 # Git ignore rules
 │
-
 ├── scripts
-
-│ └── generate-secrets.sh
-
+│   └── generate-secrets.sh    # Password generation helper
 │
-
 └── src
-
-|     └── docker-compose.yam
-
----
+    └── docker-compose.yaml
+```
 
 # Storage layout
 
