@@ -1,3 +1,8 @@
+![Docker](https://img.shields.io/badge/docker-ready-blue)
+![GLPI](https://img.shields.io/badge/GLPI-11.0.6-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Maintained](https://img.shields.io/badge/status-maintained-brightgreen)
+
 # GLPI Docker Deployment
 
 Production-ready Docker image for **GLPI 11.0.6**, designed to run behind a reverse proxy such as **Traefik**, **Caddy**, or **Nginx**.
