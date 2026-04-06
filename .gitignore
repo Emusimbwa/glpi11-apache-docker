@@ -1,0 +1,36 @@
+# environment
+.env
+.env.*
+
+# keep example env
+!.env.example
+
+# secrets
+secrets/
+acme.json
+
+# logs
+logs/
+*.log
+
+# database
+*.sql
+*.sql.gz
+
+# volumes
+data/
+backup/
+
+# docker files used locally
+Dockerfile
+docker-compose.yml
+src/docker-compose.yaml
+apache-glpi.conf.template
+
+# system
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/

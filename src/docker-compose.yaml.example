@@ -1,0 +1,101 @@
+services:
+  db:
+    image: mariadb:lts
+    container_name: glpi-db
+    env_file:
+      - .env
+    environment:
+      MARIADB_DATABASE: ${GLPI_DB_NAME}
+      MARIADB_USER: ${GLPI_DB_USER}
+      MARIADB_PASSWORD: ${GLPI_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${GLPI_DB_ROOT_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - glpi_db:/var/lib/mysql
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  glpi:
+    image: ${GLPI_IMAGE}
+    container_name: glpi-app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - glpi_config:/etc/glpi
+      - glpi_var:/var/lib/glpi
+      - glpi_logs:/var/log/glpi
+    networks:
+      - backend
+      - proxy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "php -v >/dev/null 2>&1 && curl -fsS http://127.0.0.1/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK}
+      - traefik.http.routers.glpi.rule=Host(`${GLPI_HOST}`)
+      - traefik.http.routers.glpi.entrypoints=websecure
+      - traefik.http.routers.glpi.tls=true
+      - traefik.http.routers.glpi.tls.certresolver=${TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.glpi.middlewares=${TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.glpi.loadbalancer.server.port=80
+
+      # Optionnel: redirection HTTP -> HTTPS si ton Traefik ne le fait pas globalement
+      #- traefik.http.routers.glpi-http.rule=Host(`${GLPI_HOST}`)
+      #- traefik.http.routers.glpi-http.entrypoints=web
+      #- traefik.http.routers.glpi-http.middlewares=redirect-to-https@docker
+      #- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+
+  glpi-cron:
+    image: ${GLPI_IMAGE}
+    container_name: glpi-cron
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      glpi:
+        condition: service_started
+    volumes:
+      - glpi_config:/etc/glpi
+      - glpi_var:/var/lib/glpi
+      - glpi_logs:/var/log/glpi
+    networks:
+      - backend
+    restart: unless-stopped
+    entrypoint: []
+    command:
+      - /bin/sh
+      - -c
+      - 'while true; do php /var/www/glpi/front/cron.php || true; sleep "${GLPI_CRON_INTERVAL:-300}"; done'
+
+networks:
+  backend:
+    driver: bridge
+    internal: true
+
+  traefik_public:
+    external: true
+    name: ${TRAEFIK_NETWORK}
+
+volumes:
+  glpi_db:
+  glpi_config:
+  glpi_var:
+  glpi_logs:
