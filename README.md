@@ -1,58 +1,53 @@
 # GLPI Docker Deployment
 
-Production-oriented Docker image for **GLPI 11**, designed to run behind a reverse proxy such as **Traefik** or **Caddy**, with persistent storage and a non-root runtime.
+Production-ready Docker image for **GLPI 11.0.6**, designed to run behind a reverse proxy such as **Traefik**, **Caddy**, or **Nginx**.
 
-This project provides a reusable GLPI container architecture including:
-
-- GLPI container
-- MariaDB container
-- optional GLPI cron container
-- reverse proxy integration
-- persistent volumes
-- environment-based configuration
+This project provides a reusable container image and example deployment architecture using Docker Compose.
 
 ---
 
-# Architecture
+# Project repository
 
-Typical deployment:
+GitHub repository:
 
-Internet
-│
-Reverse Proxy (Traefik / Caddy)
-│
-GLPI Container
-│
-MariaDB Container
+https://github.com/Emusimbwa/glpi11-apache-docker
 
-Optional:
+Docker Hub image:
 
-GLPI Cron Container
-
-The reverse proxy handles:
-
-- HTTPS
-- domain routing
-- security middlewares
-- rate limiting
+https://hub.docker.com/r/abed4/glpi
 
 ---
 
 # Features
 
-- GLPI 11
+- GLPI 11.0.6
 - Apache + PHP runtime
-- external database support
-- persistent storage
-- reverse proxy ready
-- environment-driven configuration
-- non-root runtime execution
-- cron compatible container
-- reusable Docker image
+- External MariaDB support
+- Persistent storage
+- Reverse proxy ready
+- Non-root runtime
+- Environment-based configuration
+- Compatible with cron container
 
 ---
 
-# Storage Layout
+# Project structure
+
+├── Dockerfile
+├── downstream.php
+├── local_define.php
+├── README.md
+├── .env.example
+│
+├── scripts
+│ └── generate-secrets.sh
+│
+└── src
+  └── docker-compose.yam
+
+---
+
+# Storage layout
 
 The container uses the following directories:
 
@@ -62,165 +57,124 @@ The container uses the following directories:
 | `/var/lib/glpi` | persistent application data |
 | `/var/log/glpi` | logs |
 
-GLPI configuration is managed through:
+GLPI configuration is redirected using:
 
-downstream.php
-local_define.php
+- `downstream.php`
+- `local_define.php`
 
-This allows GLPI to keep sensitive and dynamic data outside the web root.
-
----
-
-# Docker Image
-
-Pull the image:
-
-docker pull YOUR_DOCKERHUB_USERNAME/glpi:11.0.6
+This allows configuration and runtime data to stay outside the web root.
 
 ---
 
-# Example docker-compose
+# Pull the image
 
-services:
-
-db:
-- image: mariadb:lts
-- env_file:
-- .env
-environment:
-- MARIADB_DATABASE: ${GLPI_DB_NAME}
-- MARIADB_USER: ${GLPI_DB_USER}
-- MARIADB_PASSWORD: ${GLPI_DB_PASSWORD}
-- MARIADB_ROOT_PASSWORD: ${GLPI_DB_ROOT_PASSWORD}
-volumes:
-- glpi_db:/var/lib/mysql
-- restart: unless-stopped
-
-glpi:
-image: ${GLPI_IMAGE}
-env_file:
-- .env
-depends_on:
-- db
-volumes:
-- glpi_config:/etc/glpi
-- glpi_var:/var/lib/glpi
-- glpi_logs:/var/log/glpi
-restart: unless-stopped
-
-labels:
-  - traefik.enable=true
-  - traefik.docker.network=${TRAEFIK_NETWORK}
-  - traefik.http.routers.glpi.rule=Host(`${GLPI_HOST}`)
-  - traefik.http.routers.glpi.entrypoints=websecure
-  - traefik.http.routers.glpi.tls=true
-  - traefik.http.routers.glpi.tls.certresolver=${TRAEFIK_CERTRESOLVER}
-  - traefik.http.routers.glpi.middlewares=${TRAEFIK_MIDDLEWARES}
-  - traefik.http.services.glpi.loadbalancer.server.port=80
-
-glpi-cron:
-image: ${GLPI_IMAGE}
-env_file:
-- .env
-depends_on:
-- db
-volumes:
-- glpi_config:/etc/glpi
-- glpi_var:/var/lib/glpi
-- glpi_logs:/var/log/glpi
-restart: unless-stopped
-
-entrypoint: []
-command:
-  - /bin/sh
-  - -c
-  - |
-    while true; do
-      php /var/www/glpi/front/cron.php || true
-      sleep "${GLPI_CRON_INTERVAL:-300}"
-    done
-
-    volumes:
-glpi_db:
-glpi_config:
-glpi_var:
-glpi_logs:
+`docker pull abed4/glpi:11.0.6`
 
 ---
 
-# Environment variables
+# Example deployment
 
-Create a `.env` file based on `.env.example`.
+The example Docker Compose configuration is located in:
 
-Example:
+`src/docker-compose.yaml`
 
-GLPI_IMAGE=abed4/glpi:11.0.6
+Example usage:
 
-GLPI_DB_NAME=glpi
-GLPI_DB_USER=glpi
-GLPI_DB_PASSWORD=strong_password
-GLPI_DB_ROOT_PASSWORD=strong_root_password
-
-GLPI_HOST=glpi.example.com
-
-TRAEFIK_NETWORK=proxy
-TRAEFIK_CERTRESOLVER=letsencrypt
-TRAEFIK_MIDDLEWARES=secure-headers@file
-
-GLPI_CRON_INTERVAL=300
+- `cd src`
+- `docker compose up -d`
 
 ---
 
-# Installation
+# Database configuration
 
-Start the stack:
+During the GLPI installation wizard, use:
 
-docker compose up -d
-
-Then open your browser:
-
-https://glpi.example.com
-
-Follow the GLPI installation wizard.
-
-Database host:
-
+- `Database host:`
 db
 
----
+- `Database port:`
+3306
 
-# Security notes
-
-This repository intentionally excludes:
-
-- personal domains
-- real credentials
-- infrastructure-specific configuration
-
-Best practices:
-
-- use strong passwords
-- do not commit `.env`
-- use Docker secrets in production
-- keep the database container internal
-- expose only the reverse proxy publicly
+The database credentials are defined in the `.env` file.
 
 ---
 
-# Reverse Proxy
+# Environment configuration
 
-This project assumes a reverse proxy handles:
+Create your environment file from the example:
+- `cp .env.example .env`
+
+Edit the `.env` file and set your values.
+
+Example variables:
+
+`GLPI_IMAGE=`abed4/glpi:11.0.6
+
+`GLPI_DB_NAME=`glpi
+
+`GLPI_DB_USER=`glpi
+
+`GLPI_DB_PASSWORD=`change_me
+
+`GLPI_DB_ROOT_PASSWORD=`change_me_root
+
+`GLPI_HOST=`glpi.example.com
+
+`TRAEFIK_NETWORK=`proxy
+
+`TRAEFIK_CERTRESOLVER=`letsencrypt
+
+`TRAEFIK_MIDDLEWARES=`secure-headers@file
+
+`GLPI_CRON_INTERVAL=`300
+
+---
+
+# Password generation script
+
+A helper script is provided to generate secure passwords.
+
+Location:
+- `scripts/generate-secrets.sh`
+
+Run it:
+- `chmod +x scripts/generate-secrets.sh`
+- `./scripts/generate-secrets.sh`
+
+Example output:
+- `GLPI_DB_PASSWORD=F3k9aB4wT3...`
+- `GLPI_DB_ROOT_PASSWORD=s9Ds8f93J...`
+
+Copy these values into your `.env` file.
+
+---
+
+# Reverse proxy
+
+This container is designed to run behind a reverse proxy.
+
+Compatible proxies:
+
+- Traefik
+- Caddy
+- Nginx
+
+The reverse proxy should handle:
 
 - HTTPS
 - TLS certificates
 - routing
 - security middlewares
 
-Example compatible proxies:
+---
 
-- Traefik
-- Caddy
-- Nginx
+# Security recommendations
+
+- never commit `.env`
+- use strong passwords
+- restrict database access to internal Docker networks
+- expose only the reverse proxy publicly
+- optionally use Docker secrets in production
 
 ---
 
