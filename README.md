@@ -80,11 +80,10 @@ This allows configuration and runtime data to stay outside the web root.
 
 The example Docker Compose configuration is located in:
 
-`src/docker-compose.yaml`
+`docker-compose.yaml`
 
 Example usage:
 
-- `cd src`
 - `docker compose up -d`
 
 ---
