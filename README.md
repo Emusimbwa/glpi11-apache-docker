@@ -1,11 +1,11 @@
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
-![GLPI](https://img.shields.io/badge/GLPI-11.0.6-green)
+![GLPI](https://img.shields.io/badge/GLPI-11.0.7-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Maintained](https://img.shields.io/badge/status-maintained-brightgreen)
 
 # GLPI Docker Deployment
 
-Production-ready Docker image for **GLPI 11.0.6**, designed to run behind a reverse proxy such as **Traefik**, **Caddy**, or **Nginx**.
+Production-ready Docker image for **GLPI 11.0.7**, designed to run behind a reverse proxy such as **Traefik**, **Caddy**, or **Nginx**.
 
 This project provides a reusable container image and example deployment architecture using Docker Compose.
 
@@ -25,7 +25,7 @@ https://hub.docker.com/r/abed4/glpi
 
 # Features
 
-- GLPI 11.0.6
+- GLPI 11.0.7
 - Apache + PHP runtime
 - External MariaDB support
 - Persistent storage
@@ -71,7 +71,7 @@ This allows configuration and runtime data to stay outside the web root.
 
 # Pull the image
 
-`docker pull abed4/glpi:11.0.6`
+`docker pull abed4/glpi:11.0.7`
 
 ---
 
@@ -166,7 +166,7 @@ During the GLPI installation wizard, use:
 db
 
 - `Database port:`
-3306
+330
 
 The database credentials are defined in the `.env` file.
 
@@ -181,7 +181,7 @@ Edit the `.env` file and set your values.
 
 Example variables:
 
-`GLPI_IMAGE=`abed4/glpi:11.0.6
+`GLPI_IMAGE=`abed4/glpi:11.0.7
 
 `GLPI_DB_NAME=`glpi
 
