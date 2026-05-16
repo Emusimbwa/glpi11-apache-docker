@@ -243,6 +243,13 @@ The reverse proxy should handle:
 
 # Security recommendations
 
+Container images should be rebuilt regularly to receive upstream security updates from:
+
+- Debian
+- PHP
+- Apache
+- system libraries
+  
 - never commit `.env`
 - use strong passwords
 - restrict database access to internal Docker networks
