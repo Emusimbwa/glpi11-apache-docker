@@ -47,8 +47,7 @@ glpi11-apache-docker/
 ├── scripts
 │   └── generate-secrets.sh    # Password generation helper
 │
-└── src
-    └── docker-compose.yaml
+└── docker-compose.yaml
 ```
 
 # Storage layout
@@ -76,15 +75,86 @@ This allows configuration and runtime data to stay outside the web root.
 
 ---
 
-# Example deployment
+## Deployment modes
 
-The example Docker Compose configuration is located in:
+This project supports two deployment modes:
 
-`docker-compose.yaml`
+### 1. Direct deployment without reverse proxy
 
-Example usage:
+This mode is useful for local testing or validating the image without Traefik/Caddy/Nginx.
 
-- `docker compose up -d`
+In this mode, GLPI must be connected to a non-internal Docker network and exposed with a port mapping.
+
+Example:
+
+```yaml
+services:
+  glpi:
+    image: ${GLPI_IMAGE}
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+      - public_test
+
+networks:
+  backend:
+    internal: true
+
+  public_test:
+    driver: bridge
+```
+
+Access GLPI at:
+
+http://localhost:8080
+
+or:
+
+http://SERVER_IP:8080
+
+Important: if GLPI is connected only to an internal: true network, Docker will not publish the port correctly.
+
+### 2. Deployment behind a reverse proxy
+
+This mode is recommended for production.
+
+In this mode:
+
+- GLPI is not directly exposed with ports
+- Traefik/Caddy/Nginx handles public access
+- GLPI is connected to the reverse proxy network
+- MariaDB stays on an internal backend network
+
+Example with Traefik:
+
+```yaml
+services:
+  glpi:
+    image: ${GLPI_IMAGE}
+    networks:
+      - backend
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK}
+      - traefik.http.routers.glpi.rule=Host(`${GLPI_HOST}`)
+      - traefik.http.routers.glpi.entrypoints=websecure
+      - traefik.http.routers.glpi.tls=true
+      - traefik.http.services.glpi.loadbalancer.server.port=80
+
+networks:
+  backend:
+    internal: true
+
+  proxy:
+    external: true
+    name: ${TRAEFIK_NETWORK}
+```
+
+Access GLPI at:
+
+https://glpi.example.com
 
 ---
 
