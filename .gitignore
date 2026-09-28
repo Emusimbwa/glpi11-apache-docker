@@ -23,7 +23,6 @@ data/
 backup/
 
 # docker files used locally
-Dockerfile
 docker-compose.yml
 src/docker-compose.yaml
 
