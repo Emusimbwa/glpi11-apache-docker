@@ -1,6 +1,7 @@
 # environment
 .env
 .env.*
+.prod.*
 
 # keep example env
 !.env.example
@@ -25,7 +26,6 @@ backup/
 Dockerfile
 docker-compose.yml
 src/docker-compose.yaml
-apache-glpi.conf.template
 
 # system
 .DS_Store

@@ -1,0 +1,21 @@
+<VirtualHost *:${APACHE_LISTEN_PORT}>
+    ServerName ${APACHE_SERVER_NAME}
+
+    DocumentRoot ${APACHE_DOCUMENT_ROOT}
+
+    <Directory ${APACHE_DOCUMENT_ROOT}>
+        AllowOverride All
+        Require all granted
+
+        RewriteEngine On
+
+        RewriteCond %{HTTP:Authorization} ^(.+)$
+        RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^(.*)$ index.php [QSA,L]
+    </Directory>
+
+    ErrorLog /proc/self/fd/2
+    CustomLog /proc/self/fd/1 combined
+</VirtualHost>
