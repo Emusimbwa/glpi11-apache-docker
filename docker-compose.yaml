@@ -1,9 +1,9 @@
+name: glpi
+
 services:
   db:
     image: mariadb:lts
     container_name: glpi-db
-    env_file:
-      - .env
     environment:
       MARIADB_DATABASE: ${GLPI_DB_NAME}
       MARIADB_USER: ${GLPI_DB_USER}
@@ -65,12 +65,6 @@ services:
       # Port interne du container GLPI
       - traefik.http.services.glpi.loadbalancer.server.port=80
 
-      # Optionnel: redirection HTTP -> HTTPS si ton Traefik ne le fait pas globalement
-      #- traefik.http.routers.glpi-http.rule=Host(`${GLPI_HOST}`)
-      #- traefik.http.routers.glpi-http.entrypoints=web
-      #- traefik.http.routers.glpi-http.middlewares=redirect-to-https@docker
-      #- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-
   glpi-cron:
     image: ${GLPI_IMAGE}
     container_name: glpi-cron
@@ -102,6 +96,14 @@ networks:
 
 volumes:
   glpi_db:
+    external: true
+    name: src_glpi_db
   glpi_config:
+    external: true
+    name: src_glpi_config
   glpi_var:
+    external: true
+    name: src_glpi_var
   glpi_logs:
+    external: true
+    name: src_glpi_logs
