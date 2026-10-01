@@ -26,7 +26,6 @@ backup/
 
 # docker files used locally
 docker-compose.yaml
-src/docker-compose.yaml
 
 # system
 .DS_Store
