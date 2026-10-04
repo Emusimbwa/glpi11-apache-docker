@@ -6,15 +6,10 @@ set -eu
 : "${APACHE_DOCUMENT_ROOT:=/var/www/glpi/public}"
 : "${APACHE_LISTEN_PORT:=8080}"
 
-# si local_define absent (volume vide), le recopier depuis une copie “seed”
-if [ ! -f /etc/glpi/local_define.php ] && [ -f /usr/local/share/glpi/local_define.php ]; then
-  cp /usr/local/share/glpi/local_define.php /etc/glpi/local_define.php
-fi
-
 # Crée les dossiers attendus si volume vide
 mkdir -p /etc/glpi /var/lib/glpi /var/log/glpi
 
-# Sous-dossiers GLPI_VAR_DIR (conformes à ton local_define.php)
+# Sous-dossiers GLPI_VAR_DIR (conformes au local_define.php)
 mkdir -p \
   /var/lib/glpi/_cache \
   /var/lib/glpi/_cron \
