@@ -56,12 +56,6 @@ services:
       - traefik.http.routers.glpi.middlewares=${TRAEFIK_MIDDLEWARES}
       - traefik.http.services.glpi.loadbalancer.server.port=80
 
-      # Optionnel: redirection HTTP -> HTTPS si ton Traefik ne le fait pas globalement
-      #- traefik.http.routers.glpi-http.rule=Host(`${GLPI_HOST}`)
-      #- traefik.http.routers.glpi-http.entrypoints=web
-      #- traefik.http.routers.glpi-http.middlewares=redirect-to-https@docker
-      #- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-
   glpi-cron:
     image: ${GLPI_IMAGE}
     container_name: glpi-cron
