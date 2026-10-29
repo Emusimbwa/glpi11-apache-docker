@@ -46,4 +46,3 @@ ln -sf /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/
 chown -R www-data:www-data /etc/glpi /var/lib/glpi /var/log/glpi /var/www/glpi
 
 exec "$@"
-
