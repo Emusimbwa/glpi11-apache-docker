@@ -63,14 +63,14 @@ RUN set -eux; \
   chown -R www-data:www-data /var/www/glpi /etc/glpi /var/lib/glpi /var/log/glpi
 
 # Fichiers GLPI custom
-COPY docker/local_define.php /usr/local/share/glpi/local_define.php
-COPY docker/downstream.php /usr/local/share/glpi/downstream.php
-COPY --chown=www-data:www-data docker/downstream.php /var/www/glpi/inc/downstream.php
-COPY --chown=www-data:www-data docker/local_define.php /etc/glpi/local_define.php
+COPY container/local_define.php /usr/local/share/glpi/local_define.php
+COPY container/downstream.php /usr/local/share/glpi/downstream.php
+COPY --chown=www-data:www-data container/downstream.php /var/www/glpi/inc/downstream.php
+COPY --chown=www-data:www-data container/local_define.php /etc/glpi/local_define.php
 
 # Template Apache + entrypoint
-COPY docker/apache-glpi.conf.template /usr/local/share/apache2/apache-glpi.conf.template
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY container/apache-glpi.conf.template /usr/local/share/apache2/apache-glpi.conf.template
+COPY container/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
