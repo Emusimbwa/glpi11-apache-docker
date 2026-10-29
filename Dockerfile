@@ -1,6 +1,6 @@
-FROM php:8.5.11-apache-trixie
+FROM php:8.5.12-apache-trixie
 
-ARG GLPI_VERSION=11.0.9
+ARG GLPI_VERSION=12.0.0
 ARG GLPI_URL=https://github.com/glpi-project/glpi/releases/download/${GLPI_VERSION}/glpi-${GLPI_VERSION}.tgz
 
 ENV TZ=Europe/Paris \
@@ -63,14 +63,14 @@ RUN set -eux; \
   chown -R www-data:www-data /var/www/glpi /etc/glpi /var/lib/glpi /var/log/glpi
 
 # Fichiers GLPI custom
-COPY local_define.php /usr/local/share/glpi/local_define.php
-COPY downstream.php /usr/local/share/glpi/downstream.php
-COPY --chown=www-data:www-data downstream.php /var/www/glpi/inc/downstream.php
-COPY --chown=www-data:www-data local_define.php /etc/glpi/local_define.php
+COPY docker/local_define.php /usr/local/share/glpi/local_define.php
+COPY docker/downstream.php /usr/local/share/glpi/downstream.php
+COPY --chown=www-data:www-data docker/downstream.php /var/www/glpi/inc/downstream.php
+COPY --chown=www-data:www-data docker/local_define.php /etc/glpi/local_define.php
 
 # Template Apache + entrypoint
-COPY apache-glpi.conf.template /usr/local/share/apache2/apache-glpi.conf.template
-COPY entrypoint.sh /entrypoint.sh
+COPY docker/apache-glpi.conf.template /usr/local/share/apache2/apache-glpi.conf.template
+COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
